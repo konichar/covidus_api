@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  title: Covidus API
+  description: Covidus Api v1
+  contact:
+    email: richardokonicha@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8080/konichar/covidus_api_v1/1.0.0
+    description: Covidus test server localhost
+  - url: https://virtserver.swaggerhub.com/konichar/covidus_api_v1/1.0.0
+    description: Covidus mock server created by swagger
+tags:
+  - name: UserProfiles
+    description: Operations to User Profiles collection
+paths:
+  /profiles:
+    get:
+      tags:
+        - UserProfiles
+      summary: Returns a list of all user profiles
+      description: |
+        Exposes all user profiles without filters
+      operationId: search_user_profile
+      parameters:
+        - name: searchTerm
+          in: query
+          description:
+            Pass an optional search string for looking up the userprofile
+            collection
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: user profile result matching parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProfileItem"
+                x-content-type: application/json
+        "400":
+          description: Bad input parameter check
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+  /profile:
+    post:
+      tags:
+        - UserProfiles
+      summary: Create a new user profile
+      description: adds user profile object to user profile collection
+      operationId: create_user_profile
+      requestBody:
+        description: user profile to add
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileItem"
+      responses:
+        "201":
+          description: user profile created
+        "400":
+          description: invalid input, object invalid
+        "409":
+          description: An existing user profile already exist
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+  /profile/{id}:
+    get:
+      tags:
+        - UserProfiles
+      summary: Returns a User by it's id
+      description: Returns a single object of UserProfile
+      operationId: profile_id_get
+      parameters:
+        - name: id
+          in: path
+          description: unique id number of user
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: user profile of id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileItem"
+        "400":
+          description: Bad input id check
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+    put:
+      tags:
+        - UserProfiles
+      summary: Update User by id
+      description: Update User profile by id
+      operationId: update_user_profile
+      parameters:
+        - name: id
+          in: path
+          description: unique id number of user
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileItem"
+      responses:
+        "200":
+          description: user profile updated
+        "400":
+          description: invalid input, object invalid
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+    delete:
+      tags:
+        - UserProfiles
+      summary: Delete User by id
+      description: Delete a User profile in a collection
+      operationId: delete_user_profile
+      parameters:
+        - name: id
+          in: path
+          description: unique id number of user
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: user profile deleted
+        "400":
+          description: invalid input, object invalid
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+  /profile/{id}/assessment:
+    get:
+      tags:
+        - UserProfiles
+      summary: Return list of assessment of a particular user
+      description: |
+        Exposes user assessment
+      operationId: read_assessment_by_id
+      parameters:
+        - name: id
+          in: path
+          description: assessment instance of userid id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: list of assessment of userid id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Assessment"
+                x-content-type: application/json
+        "400":
+          description: Bad input paramenter check
+      x-openapi-router-controller: swagger_server.controllers.user_profiles_controller
+components:
+  schemas:
+    ProfileItem:
+      required:
+        - fname
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: id
+          example: "1"
+        fname:
+          type: string
+          example: Joe
+        lname:
+          type: string
+          example: Marcus
+        age:
+          type: string
+          example: "22"
+        sex:
+          type: string
+          example: M
+        country:
+          type: string
+          example: south africa
+        postalcode:
+          type: string
+          example: "8989"
+        smokinghistory:
+          type: string
+          example: "yes"
+        chronicopd:
+          type: string
+          example: "no"
+        diabetes:
+          type: string
+          example: "no"
+        hypertension:
+          type: string
+          example: "yes"
+        hyperlipedia:
+          type: string
+          example: "no"
+        heartfailure:
+          type: string
+          example: "no"
+        coronaryhd:
+          type: string
+          example: "no"
+        cancer:
+          type: string
+          example: "no"
+        chronicrenaldisease:
+          type: string
+          example: "no"
+      example:
+        smokinghistory: "yes"
+        fname: Joe
+        country: south africa
+        chronicopd: "no"
+        sex: M
+        hyperlipedia: "no"
+        coronaryhd: "no"
+        lname: Marcus
+        heartfailure: "no"
+        chronicrenaldisease: "no"
+        postalcode: "8989"
+        cancer: "no"
+        id: "1"
+        diabetes: "no"
+        hypertension: "yes"
+        age: "22"
+    Assessment:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: id
+          example: "2"
+        covidsceening:
+          type: string
+          example: negative
+        currentlocation:
+          type: string
+          example: 27.2038° N, 77.5011° E
+        country:
+          type: string
+          example: Greece
+        postalcode:
+          type: string
+          example: "8989"
+        height:
+          type: string
+          example: "170"
+        weight:
+          type: string
+          example: "70"
+        temperature:
+          type: string
+          example: 32 C
+        spo2:
+          type: string
+          example: "true"
+        conjunctivalcongestion:
+          type: string
+          example: "true"
+        nasalcongestion:
+          type: string
+          example: "true"
+        headache:
+          type: string
+          example: "false"
+        cough:
+          type: string
+          example: "false"
+        sorethroat:
+          type: string
+          example: "false"
+        sputumproduction:
+          type: string
+          example: "false"
+        fatigue:
+          type: string
+          example: "false"
+        hemoptysis:
+          type: string
+          example: "false"
+        shortnessofbreath:
+          type: string
+          example: "false"
+        nauseaofvomiting:
+          type: string
+          example: "false"
+        diarrhea:
+          type: string
+          example: "false"
+        myalgiaorarthralgia:
+          type: string
+          example: "false"
+        chills:
+          type: string
+          example: "false"
+      example:
+        nasalcongestion: "true"
+        country: Greece
+        sputumproduction: "false"
+        hemoptysis: "false"
+        nauseaofvomiting: "false"
+        currentlocation: 27.2038° N, 77.5011° E
+        weight: "70"
+        covidsceening: negative
+        myalgiaorarthralgia: "false"
+        cough: "false"
+        diarrhea: "false"
+        conjunctivalcongestion: "true"
+        fatigue: "false"
+        spo2: "true"
+        sorethroat: "false"
+        chills: "false"
+        postalcode: "8989"
+        temperature: 32 C
+        shortnessofbreath: "false"
+        id: "2"
+        headache: "false"
+        height: "170"
